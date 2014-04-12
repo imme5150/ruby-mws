@@ -1,7 +1,7 @@
 module MWS
 
   class Base
-    
+
     attr_accessor :connection
 
     def initialize(options={})
@@ -28,6 +28,9 @@ module MWS
       @reports ||= MWS::API::Report.new(@connection)
     end
 
+    def sellers
+      @sellers ||= MWS::API::Sellers.new(@connection)
+    end
 
     # serves as a server ping
     def self.server_time
