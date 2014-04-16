@@ -2,7 +2,7 @@ module MWS
   module API
 
     class Response < Hashie::Rash
-      
+
       def self.parse(body, name, params)
         return body unless body.is_a?(Hash)
 

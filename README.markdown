@@ -1,8 +1,6 @@
 ruby-mws
 ========
 
-by Erik Lyngved
-
 ### Read me!
 
 ruby-mws is a Ruby gem that wraps the Amazon Marketplace Web Service (MWS) API. Right now it only supports Amazon's Order and Inventory APIs.
@@ -115,6 +113,31 @@ This object can be used to access all API services. Below are examples on how to
 * GetReport - Used to request a report by report ID. All reports are currently returned as a flat file string.
 
     `@mws.reports.get_report :report_id => '11223344'`
+
+### Sellers API
+
+* ListMarketplaceParticipations - Returns a list of marketplaces that the seller submitting the request can sell in, and a list of participations that include seller-specific information in that marketplace.
+
+    `@mws.sellers.list_marketplace_participations`
+    
+Returns:
+
+    {"list_participations"=>
+      {"participation"=>
+        {"marketplace_id"=>"ATVPDKIKX0DER",
+         "seller_id"=>"A1NTRB3FS5UD7G",
+         "has_seller_suspended_listings"=>"No"}},
+     "list_marketplaces"=>
+      {"marketplace"=>
+        {"marketplace_id"=>"ATVPDKIKX0DER",
+         "name"=>"Amazon.com",
+         "default_country_code"=>"US",
+         "default_currency_code"=>"USD",
+         "default_language_code"=>"en_US",
+         "domain_name"=>"www.amazon.com"
+        }
+      }
+    }
 
 Testing
 -------
