@@ -65,10 +65,12 @@ module MWS
                 xml.AmazonOrderID opts[:amazon_order_id]
                 xml.MerchantOrderID opts[:merchant_order_id]                  
                 xml.StatusCode opts[:status]
-                xml.Item {
-                  xml.AmazonOrderItemCode opts[:amazon_order_item_code]
-                  xml.MerchantOrderItemID opts[:merchant_order_item_id]
-                }
+                opts[:items].each do |item_hash|
+                  xml.Item {
+                    xml.AmazonOrderItemCode opts[:amazon_order_item_code]
+                    xml.MerchantOrderItemID opts[:merchant_order_item_id]
+                  }
+                end
               }
             }
           }
