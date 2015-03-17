@@ -49,7 +49,8 @@ module MWS
       # @option opts [String] :amazon_order_item_code ID of the specific item in the order
       # @option opts [String] :amazon_order_id ID of the order on amazon's side
       # @option opts [String] :merchant_order_id Internal order id
-      # @option opts [String] :merchant_order_item_id Internal order line item id      
+      # @option opts [String] :merchant_order_item_id (optional) Internal order line item id
+      # @option opts [Array<Hash{Symbol=>String}>] :items (optional) list of items in the order
       def content_for_ack_with(opts={})
         Nokogiri::XML::Builder.new do |xml|
           xml.AmazonEnvelope("xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
@@ -65,10 +66,12 @@ module MWS
                 xml.AmazonOrderID opts[:amazon_order_id]
                 xml.MerchantOrderID opts[:merchant_order_id]                  
                 xml.StatusCode "Success"
-                xml.Item {
-                  xml.AmazonOrderItemCode opts[:amazon_order_item_code]
-                  xml.MerchantOrderItemID opts[:merchant_order_item_id]
-                }
+                (opts[:items] || [opts]).each do |item_hash|
+                  xml.Item {
+                    xml.AmazonOrderItemCode item_hash[:amazon_order_item_code]
+                    xml.MerchantOrderItemID item_hash[:merchant_order_item_id]
+                  }
+                end
               }
             }
           }
