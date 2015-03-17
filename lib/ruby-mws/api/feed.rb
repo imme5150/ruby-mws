@@ -6,10 +6,11 @@ module MWS
     class Feed < Base
       ORDER_ACK = '_POST_ORDER_ACKNOWLEDGEMENT_DATA_'
       SHIP_ACK = '_POST_ORDER_FULFILLMENT_DATA_'
+      INVENTORY_AVAILABILITY = '_POST_INVENTORY_AVAILABILITY_DATA_'
 
       # POSTs a request to the submit feed action of the feeds api
       #
-      # @param type [String] either MWS::API::Feed::ORDER_ACK or SHIP_ACK
+      # @param type [String] either MWS::API::Feed::ORDER_ACK, SHIP_ACK or INVENTORY_AVAILABILITY
       # @param content_params [Hash{Symbol => String,Hash,Integer}]
       # @return [MWS::API::Response] The response from Amazon
       # @todo Think about whether we should make this more general
@@ -21,6 +22,8 @@ module MWS
                  content_for_ack_with(content_params)
                when SHIP_ACK
                  content_for_ship_with(content_params)
+               when INVENTORY_AVAILABILITY
+                 content_for_inventory_availability_with(content_params)
                end
         query_params = {:feed_type => type}
         options = {
@@ -75,7 +78,7 @@ module MWS
         end.to_xml
       end
 
-      # Returns a string containing the shipping achnowledgement xml
+      # Returns a string containing the shipping acknowledgement xml
       #
       # @param [Hash{Symbol => String,Array,DateTime}] opts contains:
       # @option opts [Array<Hash>] :orders order specifics including:
@@ -122,6 +125,35 @@ module MWS
                       xml.Quantity item_hash[:quantity]
                     }
                   end
+                }
+              }
+            end
+          }
+        end.to_xml
+      end
+
+      # Returns a string containing the inventory availability xml
+      #
+      # @param [Hash{Symbol => String,Fixnum}] opts contains:
+      # @option opts [Array<Hash>] :inventories inventory specifics including:
+      #   @option opts [String] :sku Product SKU id
+      #   @option opts [Fixnum] :quantity The quantity available
+      def content_for_inventory_availability_with(opts={})
+        Nokogiri::XML::Builder.new do |xml|
+          xml.AmazonEnvelope("xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
+                             "xsi:noNamespaceSchemaLocation" => "amzn-envelope.xsd") {
+            xml.Header {
+              xml.DocumentVersion "1.01"
+              xml.MerchantIdentifier @connection.seller_id
+            }
+            xml.MessageType "Inventory"
+            opts[:inventories].each_with_index do |inventory, index|
+              xml.Message {
+                xml.MessageID (index + 1).to_s
+                xml.OperationType "Update"
+                xml.Inventory {
+                  xml.SKU inventory[:sku]
+                  xml.Quantity inventory[:quantity]
                 }
               }
             end
