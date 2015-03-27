@@ -158,6 +158,9 @@ module MWS
                 xml.Inventory {
                   xml.SKU inventory[:sku]
                   xml.Quantity inventory[:quantity]
+                  if inventory[:fulfillment_latency]
+                    xml.FulfillmentLatency inventory[:fulfillment_latency]
+                  end
                 }
               }
             end
