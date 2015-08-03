@@ -7,7 +7,7 @@ module MWS
     class Base
       include HTTParty
       parser MWS::API::BinaryParser
-      debug_output $stderr  # only in development
+      # debug_output $stderr  # This was causing: TypeError "Can't dump IO"
       #format :xml
       headers "User-Agent"   => "ruby-mws/#{MWS::VERSION} (Language=Ruby/1.9.3-p0)"
       headers "Content-Type" => "text/xml"
